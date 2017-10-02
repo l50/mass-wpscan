@@ -18,7 +18,7 @@ def open_in_browser():
 # Take n and add it to the target file
 def target_to_file(n):
     with open(target_file, "a") as t_file:
-        t_file.write("vulnerablewordpress-%d\n" % n)
+        t_file.write("http://0.0.0.0:4440%d\n" % n)
 
 
 # Build n vulnerable containers
