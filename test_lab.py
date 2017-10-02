@@ -8,11 +8,18 @@ from termcolor import colored
 __auth__ = 'jayson.e.grace@gmail.com'
 
 containers = 5
+target_file = 'vuln_targets.txt'
 
 # Open n containers in the default browser
 def open_in_browser():
     for n in range(containers):
         os.system("open http://localhost:4440%d" % n)
+
+# Take n and add it to the target file
+def target_to_file(n):
+    with open(target_file, "a") as t_file:
+        t_file.write("vulnerablewordpress-%d\n" % n)
+
 
 # Build n vulnerable containers
 def build():
@@ -24,6 +31,7 @@ def build():
             os.wait()
             processes.difference_update([
                 p for p in processes if p.poll() is not None])
+        target_to_file(n)
 
     time.sleep(15)
     open_in_browser()
@@ -35,6 +43,10 @@ def destroy():
         print(colored("Destroying vulnerablewordpress-%d" % (n), 'red'))
         os.system("docker stop vulnerablewordpress-%d" % n)
         os.system("docker rm vulnerablewordpress-%d" % n)
+    try:
+        os.remove(target_file)
+    except OSError:
+        pass
 
 # Validate input to ensure arguments have been input and are valid
 def validate_input(args):
