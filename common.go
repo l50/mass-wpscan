@@ -4,12 +4,12 @@
 package main
 
 import (
-	"regexp"
-	"sync"
 	"fmt"
-	"strings"
-	"os/exec"
 	"github.com/fatih/color"
+	"os/exec"
+	"regexp"
+	"strings"
+	"sync"
 )
 
 // Execute an input command
@@ -21,7 +21,7 @@ func exeCmd(cmd string, wg *sync.WaitGroup) string {
 	fmt.Println("Running: ", cmd)
 	parts := strings.Fields(cmd)
 	head := parts[0]
-	parts = parts[1:len(parts)]
+	parts = parts[1:]
 
 	out, err := exec.Command(head, parts...).Output()
 	if err != nil {

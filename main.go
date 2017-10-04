@@ -4,12 +4,12 @@
 package main
 
 import (
+	"flag"
 	"fmt"
-	"sync"
 	"github.com/fatih/color"
 	"log"
-	"flag"
 	"os"
+	"sync"
 )
 
 var (
