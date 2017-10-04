@@ -1,5 +1,7 @@
 # mass-wpscan
+[![Go Report Card](https://goreportcard.com/badge/github.com/l50/mass-wpscan)](https://goreportcard.com/report/github.com/l50/mass-wpscan)
 [![License](http://img.shields.io/:license-mit-blue.svg)](https://github.com/l50/mass-wpscan/blob/master/LICENSE)
+
 
 Used to scan multiple wordpress sites with wpscan. Specify an input file
 with targets, the parameters you want to use with wpscan for each
