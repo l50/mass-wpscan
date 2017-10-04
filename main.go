@@ -5,112 +5,98 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
-	"os/exec"
-	"strings"
 	"sync"
-
 	"github.com/fatih/color"
+	"log"
+	"flag"
+	"os"
 )
 
-// Execute an input command
-// Takes cmd, the command to run
-// Takes wg, a sync.WaitGroup
-// Returns a string with the output result of the command
-// TODO: Add concurrent operations to speed things up
-func ExeCmd(cmd string, wg *sync.WaitGroup) string {
-	fmt.Println("Running: ", cmd)
-	parts := strings.Fields(cmd)
-	head := parts[0]
-	parts = parts[1:len(parts)]
+var (
+	inputFile string
+	wpParams  string
+	outfile   string
+)
 
-	out, err := exec.Command(head, parts...).Output()
-	if err != nil {
-		fmt.Printf("%s", err)
-	}
-	fmt.Printf("%s", out)
-	wg.Done()
-	return string(out)
-}
-
-// Convert a file into an array
-// Takes filename, the file to read
-// Returns a string array with the content of the file
-func FileToArray(filename string) []string {
-	content, err := ioutil.ReadFile(filename)
-	if err != nil {
-		println(err.Error())
-		return nil
-	}
-	fileArr := strings.Split(string(content), "\n")
-	return fileArr
-}
-
-// Remove --url from arguments if included and convert arguments into a string
-// Takes inputArgs, the parameters that were input
-// Returns args, the inputArgs in string format without the --url parameter (if it was input)
-func processUrlParams(inputArgs []string) string {
-	for i, v := range inputArgs {
-		if v == "--url" {
-			inputArgs = append(inputArgs[:i], inputArgs[i+1:]...)
-			break
-		}
-	}
-	args := strings.Join(inputArgs, " ")
-	return args
-}
-
-func scanTargets(targets []string, inputArgs []string, output string, wg *sync.WaitGroup) string {
-	var wp_out string
-	args := processUrlParams(inputArgs)
+func scanTargets(targets []string, wpParams string, cmdOutput []string, wg *sync.WaitGroup) []string {
+	var output string
 	for _, target := range targets {
 		color.Green("Scanning %s with wpscan, please wait...", target)
-		cmd := "wpscan" + " --url " + target + " " + args
+		cmd := "wpscan" + " --url " + target + " " + wpParams
 		wg.Add(1)
-		wp_out += ExeCmd(string(cmd), wg)
-		wp_out += "\n"
+		output = exeCmd(string(cmd), wg)
+		cmdOutput = append(cmdOutput, output)
 		wg.Wait()
 	}
-	fmt.Print("hi")
-	return output + wp_out
+	return cmdOutput
 }
-
-func ArrayToFile(contents []byte, file string) {
-	ioutil.WriteFile(file, contents, 0644)
-}
-
-//func usage() {
-//	fmt.Println("Usage: mass-wpscan [options] keyword")
-//	flag.PrintDefaults()
-//}
 
 func main() {
-	//flag.Usage = usage
-	//flag.BoolVar(&config.help, "h", false, "Show help page.")
-	//flag.BoolVar(&config.args, "a", false, "Arguments to run with wpscan.")
-	//flag.BoolVar(&config.input, "i", false, "Input file with targets.")
-	//flag.BoolVar(&config.output, "o", false, "Output file.")
+	var cmdOutput []string
 
-	//flag.Parse()
+	flag.Parse()
 
-	//if len(flag.Args()) != 1 {
-	//	flag.Usage()
-	//	os.Exit(0)
-	//}
+	// if there's no input, print usage
+	if flag.NFlag() == 0 || validateInput() == false {
+		printUsage()
+	}
+
+	paramSlice := splitStringSpaceSlice(wpParams)
+
+	validateWpParams(paramSlice)
+
 	wg := new(sync.WaitGroup)
 	color.Green("Updating wpscan, please wait...")
 	wg.Add(1)
-	output := ExeCmd("wpscan --update", wg)
+	output := exeCmd("wpscan --update", wg)
 	wg.Wait()
-	// TODO: Make this parameter an input argument
-	targets := FileToArray("vuln_targets.txt")
-	// TODO: Make this parameter an input argument
-	wpscanArgs := []string{"-r", "--batch", "-e", "vt,tt,u,vp"}
-	// TODO: Make this parameter an input argument
-	outfile := "output.txt"
-	// TODO: require input file be specified
-	output = scanTargets(targets, wpscanArgs, output, wg)
-	fmt.Println(output)
-	ArrayToFile([]byte(output), outfile)
-	// TODO: if output file specified, write to output file else, write to stdout
+	cmdOutput = append(cmdOutput, output)
+
+	// Get targets
+	targets, err := readLines(inputFile)
+	if err != nil {
+		log.Fatalf("readLines: %s", err)
+	}
+
+	cmdOutput = scanTargets(targets, wpParams, cmdOutput, wg)
+
+	if outfile != "" {
+		if err := writeLines(cmdOutput, outfile); err != nil {
+			log.Fatalf("writeLines: %s", err)
+		}
+	} else {
+		// No output file has been specified - print output from the command
+		fmt.Println(cmdOutput)
+	}
+}
+
+func init() {
+	flag.StringVar(&inputFile, "i", "", "Input file with targets.")
+	flag.StringVar(&wpParams, "p", "", "Arguments to run with wpscan.")
+	flag.StringVar(&outfile, "o", "", "File to output information to.")
+}
+
+func printUsage() {
+	fmt.Printf("Usage: %s [options]\n", os.Args[0])
+	fmt.Println("Options:")
+	flag.PrintDefaults()
+	os.Exit(1)
+}
+
+func validateInput() bool {
+	if inputFile == "" || wpParams == "" {
+		color.Red("You must specify an input file with targets and parameters for wpscan!")
+		color.Red("Example: mass-wpscan -i vuln_targets.txt -p \"-r --batch -e vt,tt,u,vp\"")
+		return false
+	}
+	return true
+}
+
+func validateWpParams(parameters []string) {
+	for _, p := range parameters {
+		if p == "--url" {
+			color.Red("You can not include the --url parameter, all targets should be in your input file!")
+			os.Exit(1)
+		}
+	}
 }
