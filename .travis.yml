@@ -1,0 +1,26 @@
+sudo: required
+
+language: go
+go: 1.9.x
+
+services:
+  - docker
+
+before_install:
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - sudo apt update
+  - sudo apt -y install docker-ce
+  - docker --version
+  - docker pull wpscanteam/vulnerablewordpress
+
+install:
+  - make install
+
+script:
+  - make test
+  - echo -e \"$(docker ps --format '{{.Names}}')\" > targets.txt
+  - ./mass-wpscan -i vuln_targets.txt -p \"-r --batch -e vt,tt,u,vp\" -o output.txt
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
