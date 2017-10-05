@@ -7,14 +7,18 @@ services:
   - docker
 
 before_install:
+  - rvm install 2.4.2
   - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
   - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
   - sudo apt update
   - sudo apt -y install docker-ce
   - docker --version
   - docker pull wpscanteam/vulnerablewordpress
-  - docker pull wpscanteam/wpscan
-  - alias wpscan="docker run --rm wpscanteam/wpscan"
+  - git clone https://github.com/wpscanteam/wpscan.git
+  - cd wpscan
+  - gem install bundler
+  - bundle install --without test
+  - ln -s $(pwd)/wpscan.rb /usr/local/bin/wpscan
 
 install:
   - make setup
