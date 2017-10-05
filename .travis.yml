@@ -18,7 +18,7 @@ before_install:
   - cd wpscan
   - gem install bundler
   - bundle install --without test
-  - ln -s $(pwd)/wpscan.rb /usr/local/bin/wpscan
+  - sudo ln -s $(pwd)/wpscan.rb /usr/local/bin/wpscan
 
 install:
   - make setup
