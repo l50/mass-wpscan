@@ -1,8 +1,14 @@
 install:
 	go build
 
-buildtest:
+test:
+	docker-compose up -d
+
+destroy:
+	docker-compose stop && docker-compose rm -f
+
+dynamictest:
 	python test_lab.py build
 
-destroytest:
+dynamicdestroy:
 	python test_lab.py destroy

@@ -1,0 +1,24 @@
+version: '2'
+
+services:
+
+  vuln-0:
+    image: wpscanteam/vulnerablewordpress
+    container_name: vuln-0
+    ports:
+      - "44400:80"
+      - "33000:3306"
+
+  vuln-1:
+    image: wpscanteam/vulnerablewordpress
+    container_name: vuln-1
+    ports:
+      - "44401:80"
+      - "33001:3306"
+
+  vuln-2:
+    image: wpscanteam/vulnerablewordpress
+    container_name: vuln-2
+    ports:
+      - "44402:80"
+      - "33002:3306"
