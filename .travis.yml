@@ -20,8 +20,8 @@ install:
 
 script:
   - make test
-  - echo -e \"$(docker ps --format '{{.Names}}')\" > targets.txt
-  - ./mass-wpscan -i vuln_targets.txt -p \"-r --batch -e vt,tt,u,vp\" -o output.txt
+  - echo -e "$(docker ps --format '{{.Names}}')" > targets.txt
+  - ./mass-wpscan -i vuln_targets.txt -p "-r --batch -e vt,tt,u,vp" -o output.txt
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
