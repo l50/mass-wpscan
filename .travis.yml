@@ -13,6 +13,8 @@ before_install:
   - sudo apt -y install docker-ce
   - docker --version
   - docker pull wpscanteam/vulnerablewordpress
+  - docker pull wpscanteam/wpscan
+  - alias wpscan="docker run --rm wpscanteam/wpscan"
 
 install:
   - make setup
@@ -20,7 +22,7 @@ install:
 
 script:
   - make test
-  - echo -e "$(docker ps --format '{{.Names}}')" > targets.txt
+  - docker ps | awk '{ print $13 }' | grep -o -P "(.*:\d+)" > vuln_targets.txt
   - ./mass-wpscan -i vuln_targets.txt -p "-r --batch -e vt,tt,u,vp" -o output.txt
 
 after_success:
