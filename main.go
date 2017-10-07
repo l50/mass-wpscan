@@ -16,12 +16,20 @@ var (
 	inputFile string
 	wpParams  string
 	outfile   string
+	errmsg = color.Red
+	warn = color.Yellow
+	msg = color.Green
 )
+
+func fatal(exitval int, fmt string, args ...interface{}) {
+	errmsg(fmt, args...)
+	os.Exit(exitval)
+}
 
 func scanTargets(targets []string, wpParams string, cmdOutput []string, wg *sync.WaitGroup) []string {
 	var output string
 	for _, target := range targets {
-		color.Green("Scanning %s with wpscan, please wait...", target)
+		msg("Scanning %s with wpscan, please wait...", target)
 		cmd := "wpscan" + " --url " + target + " " + wpParams
 		wg.Add(1)
 		output = exeCmd(string(cmd), wg)
@@ -38,7 +46,7 @@ func main() {
 
 	// if there's no input, print usage
 	if flag.NFlag() == 0 || validateInput() == false {
-		printUsage()
+		usage()
 	}
 
 	paramSlice := splitStringSpaceSlice(wpParams)
@@ -46,7 +54,7 @@ func main() {
 	validateWpParams(paramSlice)
 
 	wg := new(sync.WaitGroup)
-	color.Green("Updating wpscan, please wait...")
+	msg("Updating wpscan, please wait...")
 	wg.Add(1)
 	output := exeCmd("wpscan --update", wg)
 	wg.Wait()
@@ -76,17 +84,16 @@ func init() {
 	flag.StringVar(&outfile, "o", "", "File to output information to.")
 }
 
-func printUsage() {
-	fmt.Printf("Usage: %s [options]\n", os.Args[0])
-	fmt.Println("Options:")
-	flag.PrintDefaults()
+func usage() {
+	os.Args[0] = os.Args[0] + " [options]"
+	flag.Usage()
 	os.Exit(1)
 }
 
 func validateInput() bool {
 	if inputFile == "" || wpParams == "" {
-		color.Red("You must specify an input file with targets and parameters for wpscan!")
-		color.Red("Example: mass-wpscan -i vuln_targets.txt -p \"-r --batch -e vt,tt,u,vp\"")
+		errmsg("You must specify an input file with targets and parameters for wpscan!")
+		errmsg("Example: mass-wpscan -i vuln_targets.txt -p \"-r --batch -e vt,tt,u,vp\"")
 		return false
 	}
 	return true
@@ -95,8 +102,7 @@ func validateInput() bool {
 func validateWpParams(parameters []string) {
 	for _, p := range parameters {
 		if p == "--url" {
-			color.Red("You can not include the --url parameter, all targets should be in your input file!")
-			os.Exit(1)
+			fatal(1, "You can not include the --url parameter, all targets should be in your input file!")
 		}
 	}
 }
