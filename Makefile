@@ -1,10 +1,6 @@
 build:
 	go build
 
-setup:
-	@echo "===> Installing deps"
-	go get -u github.com/fatih/color
-
 test:
 	docker-compose up -d
 

@@ -22,7 +22,6 @@ before_install:
   - cd ..
 
 install:
-  - make setup
   - make build
 
 script:
