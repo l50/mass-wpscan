@@ -5,7 +5,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/fatih/color"
 	"os/exec"
 	"regexp"
 	"strings"
@@ -25,9 +24,9 @@ func exeCmd(cmd string, wg *sync.WaitGroup) string {
 
 	out, err := exec.Command(head, parts...).Output()
 	if err != nil {
-		color.Red("%s", err)
+		errmsg("%s", err)
 	}
-	color.Yellow("%s", out)
+	warn("%s", out)
 	wg.Done()
 	return string(out)
 }
