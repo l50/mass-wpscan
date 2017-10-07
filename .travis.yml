@@ -29,6 +29,7 @@ script:
   - make test
   - docker ps | awk '{ print $13 }' | grep -o -P "(.*:\d+)" > vuln_targets.txt
   - docker ps -a
+  - sleep 15
   - cat vuln_targets.txt
   - ./mass-wpscan -i vuln_targets.txt -p "-r --batch -e vt,tt,u,vp" -o output.txt
 
