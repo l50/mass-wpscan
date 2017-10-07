@@ -10,20 +10,20 @@ target, and a file to output the results to.
 
 ### Build the binary:
 ```
-make install
+make setup
 ```
 
 ### Build the test lab:
 ```
-make buildtest
+make build
 ```
 
 ### Destroy the test lab:
 ```
-make destroytest
+make destroy
 ```
 
-** Note that all test lab functionality requires that python 2.x and
+** Note that all test lab functionality requires that python 2.x, wpscan, and
 docker be installed on the system you are on
 
 ### Usage:
@@ -46,10 +46,11 @@ http://0.0.0.0:44402
 ```
 
 ### TODO:
-- [] Decide if we want to use the default wpscan parameters, or force
-  the user to input them
+- [x] Decide if we want to use the default wpscan parameters, or force
+  the user to input them -- we are going to enforce that parameters be input.
+- [x] Create .travis.yml
+- [x] Add comments
 - [] Make the scans concurrent
-- [] Add comments
 
 ## License
 MIT

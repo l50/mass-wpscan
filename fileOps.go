@@ -10,7 +10,6 @@ import (
 )
 
 // readLines reads an input file into memory from the specified path.
-//
 // Upon successfully reading the file in, it will return the lines which
 // make up the file in the form of a []string.
 func readLines(filePath string) ([]string, error) {
@@ -28,7 +27,7 @@ func readLines(filePath string) ([]string, error) {
 	return lines, scanner.Err()
 }
 
-// writeLines writes an input slice to the specified file.
+// writeLines writes the contents of an input slice to a specified file.
 func writeLines(lines []string, filePath string) error {
 	file, err := os.Create(filePath)
 	if err != nil {

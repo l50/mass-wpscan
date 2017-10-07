@@ -11,10 +11,9 @@ import (
 	"sync"
 )
 
-// Execute an input command
-// Takes cmd, the command to run
-// Takes wg, a sync.WaitGroup
-// Returns a string with the output result of the command
+// exeCmd executes an input command.
+// Once the command have successfully ben run, it will
+// return a string with the output result of the command.
 // TODO: Add concurrent operations to speed things up
 func exeCmd(cmd string, wg *sync.WaitGroup) string {
 	fmt.Println("Running: ", cmd)
@@ -31,8 +30,11 @@ func exeCmd(cmd string, wg *sync.WaitGroup) string {
 	return string(out)
 }
 
-func splitStringSpaceSlice(s string) []string {
+// strToSlice takes a string and a delimiter in the
+// form of a regex. It will use this to split a string
+// into a slice, and return it.
+func strToSlice(s string, delimiter string) []string {
 	r := regexp.MustCompile("[^\\s]+")
-	sl := r.FindAllString(s, -1)
-	return sl
+	slice := r.FindAllString(s, -1)
+	return slice
 }

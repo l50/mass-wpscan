@@ -23,7 +23,7 @@ before_install:
 
 install:
   - make setup
-  - make install
+  - make build
 
 script:
   - make test
@@ -32,6 +32,3 @@ script:
   - sleep 15
   - cat vuln_targets.txt
   - ./mass-wpscan -i vuln_targets.txt -p "-r --batch -e vt,tt,u,vp" -o output.txt
-
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
