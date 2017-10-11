@@ -32,7 +32,7 @@ docker be installed on the system you are on
 Options:
   -i string [required]
     Input file with targets.
-  -o stringng
+  -o string
     File to output information to.
   -p string [required]
     Arguments to run with wpscan.
