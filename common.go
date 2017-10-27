@@ -34,7 +34,7 @@ func exeCmd(cmd string, wg *sync.WaitGroup) string {
 // form of a regex. It will use this to split a string
 // into a slice, and return it.
 func strToSlice(s string, delimiter string) []string {
-	r := regexp.MustCompile("[^\\s]+")
+	r := regexp.MustCompile(delimiter)
 	slice := r.FindAllString(s, -1)
 	return slice
 }
