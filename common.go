@@ -12,8 +12,8 @@ import (
 )
 
 // exeCmd executes an input command.
-// Once the command have successfully ben run, it will
-// return a string with the output result of the command.
+// Return a string with the output result of the command if
+// it has run successfully.
 // TODO: Add concurrent operations to speed things up
 func exeCmd(cmd string, wg *sync.WaitGroup) string {
 	fmt.Println("Running: ", cmd)
