@@ -3,32 +3,7 @@
 // license that can be found in the LICENSE file.
 package main
 
-import (
-	"fmt"
-	"os/exec"
-	"regexp"
-	"strings"
-	"sync"
-)
-
-// exeCmd executes an input command.
-// Return a string with the output result of the command if
-// it has run successfully.
-// TODO: Add concurrent operations to speed things up
-func exeCmd(cmd string, wg *sync.WaitGroup) string {
-	fmt.Println("Running: ", cmd)
-	parts := strings.Fields(cmd)
-	head := parts[0]
-	parts = parts[1:]
-
-	out, err := exec.Command(head, parts...).Output()
-	if err != nil {
-		errmsg("%s", err)
-	}
-	warn("%s", out)
-	wg.Done()
-	return string(out)
-}
+import "regexp"
 
 // strToSlice takes a string and a delimiter in the
 // form of a regex. It will use this to split a string

@@ -10,15 +10,17 @@ import (
 	"log"
 	"os"
 	"sync"
+	"strings"
+	"os/exec"
 )
 
 var (
 	inputFile string
 	wpParams  string
 	outfile   string
-	errmsg = color.Red
-	warn = color.Yellow
-	msg = color.Green
+	errmsg    = color.Red
+	warn      = color.Yellow
+	msg       = color.Green
 )
 
 // fatal returns an exit code and an error message.
@@ -28,19 +30,46 @@ func fatal(exitval int, fmt string, args ...interface{}) {
 	os.Exit(exitval)
 }
 
-// scanTargets runs wpscan against a specified set of targets.
+// scanTargets runs wpscan against a specified set of targets concurrently.
 // Once it has finished, it returns the output results of the
 // various wpscan instances in the form of a slice.
 func scanTargets(targets []string, wpParams string, cmdOutput []string, wg *sync.WaitGroup) []string {
-	var output string
+
+	// Common Channel for the goroutines
+	tasks := make(chan *exec.Cmd, 64)
+
+	for i := 0; i < len(targets); i++ {
+		wg.Add(1)
+		go func(num int, w *sync.WaitGroup) {
+			defer w.Done()
+			var (
+				out []byte
+				err error
+			)
+			for cmd := range tasks { // this will exit the loop when the channel closes
+				out, err = cmd.Output()
+				if err != nil {
+					errmsg("%s", err)
+				}
+				warn("goroutine %d command output:%s", num, string(out))
+				cmdOutput = append(cmdOutput, string(out))
+			}
+		}(i, wg)
+	}
+
 	for _, target := range targets {
 		msg("Scanning %s with wpscan, please wait...", target)
 		cmd := "wpscan" + " --url " + target + " " + wpParams
-		wg.Add(1)
-		output = exeCmd(string(cmd), wg)
-		cmdOutput = append(cmdOutput, output)
-		wg.Wait()
+		parts := strings.Fields(string(cmd))
+		head := parts[0]
+		parts = parts[1:]
+		tasks <- exec.Command(head, parts...)
 	}
+	// close the channel
+	close(tasks)
+
+	// wait for the workers to finish
+	wg.Wait()
 	return cmdOutput
 }
 
@@ -62,9 +91,14 @@ func main() {
 	wg := new(sync.WaitGroup)
 	msg("Updating wpscan, please wait...")
 	wg.Add(1)
-	output := exeCmd("wpscan --update", wg)
-	wg.Wait()
-	cmdOutput = append(cmdOutput, output)
+	output, err := exec.Command("wpscan", "--update").Output()
+	if err != nil {
+		errmsg("%s", err)
+	}
+	warn("%s", output)
+	wg.Done()
+
+	cmdOutput = append(cmdOutput, string(output))
 
 	// Get targets
 	targets, err := readLines(inputFile)
