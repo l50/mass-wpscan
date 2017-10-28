@@ -9,9 +9,9 @@ import (
 	"github.com/fatih/color"
 	"log"
 	"os"
-	"sync"
-	"strings"
 	"os/exec"
+	"strings"
+	"sync"
 )
 
 var (
