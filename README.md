@@ -50,7 +50,7 @@ http://0.0.0.0:44402
   the user to input them -- we are going to enforce that parameters be input.
 - [x] Create .travis.yml
 - [x] Add comments
-- [] Make the scans concurrent
+- [x] Make the scans concurrent
 
 ## License
 MIT
@@ -59,3 +59,4 @@ MIT
 - https://stackoverflow.com/questions/5884154/read-text-file-into-string-array-and-write
 - https://gist.github.com/petermbenjamin/8aeece9305bb44282799384365ab3a3c#file-user-go
 - https://github.com/averagesecurityguy/searchscan/blob/master/README.md
+- https://stackoverflow.com/questions/40247726/go-execute-a-bash-command-n-times-using-goroutines-and-store-print-its-resul
