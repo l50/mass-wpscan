@@ -60,3 +60,4 @@ MIT
 - https://gist.github.com/petermbenjamin/8aeece9305bb44282799384365ab3a3c#file-user-go
 - https://github.com/averagesecurityguy/searchscan/blob/master/README.md
 - https://stackoverflow.com/questions/40247726/go-execute-a-bash-command-n-times-using-goroutines-and-store-print-its-resul
+- https://siongui.github.io/2017/01/19/go-remove-leading-and-trailing-empty-strings-in-string-slice/
