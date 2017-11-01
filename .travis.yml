@@ -31,3 +31,6 @@ script:
   - sleep 15
   - cat vuln_targets.txt
   - ./mass-wpscan -i vuln_targets.txt -p "-r --batch -e vt,tt,u,vp" -o output.txt
+  - echo "here is output.txt"
+  - cat output.txt
+  - echo "Done output.txt"
