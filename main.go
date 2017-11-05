@@ -1,11 +1,10 @@
-// Copyright 2017 Jayson Grace. All rights reserved
+// Copyright 2017 Jayson Grace and Ron Minnich. All rights reserved
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 package main
 
 import (
 	"flag"
-	"fmt"
 	"github.com/fatih/color"
 	"log"
 	"os"
@@ -112,9 +111,6 @@ func main() {
 		if err := writeLines(cmdOutput, outfile); err != nil {
 			log.Fatalf("writeLines: %s", err)
 		}
-	} else {
-		// No output file has been specified - print output from the command.
-		fmt.Println(cmdOutput)
 	}
 }
 

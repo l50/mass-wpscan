@@ -1,4 +1,4 @@
-// Copyright 2017 Jayson Grace. All rights reserved
+// Copyright 2017 Jayson Grace and Ron Minnich. All rights reserved
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 package main
