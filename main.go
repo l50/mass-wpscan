@@ -84,8 +84,7 @@ func main() {
 		}
 	}
 	for r := range res {
-		_, err := f.Write(r.out)
-		if err != nil {
+		if _, err := f.Write(r.out); err != nil {
 			log.Fatal(err)
 		}
 	}
