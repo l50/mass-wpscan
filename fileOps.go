@@ -20,12 +20,6 @@ func readLines(filePath string) ([]string, error) {
 	return RemoveTrailingEmptyStringsInStringArray(strings.Split(string(b), "\n")), nil
 }
 
-// writeLines writes the contents of an input slice to a specified file.
-// note the Go convention is the file name should probably come first.
-func writeLines(lines []string, filePath string) error {
-	return ioutil.WriteFile(filePath, []byte(strings.Join(lines, "\n")), 0644)
-}
-
 // RemoveTrailingEmptyStringsinStringArray removes any empty strings that are trailing
 // a given slice.
 func RemoveTrailingEmptyStringsInStringArray(sa []string) []string {

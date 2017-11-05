@@ -5,12 +5,13 @@ package main
 
 import (
 	"flag"
-	"github.com/fatih/color"
 	"log"
 	"os"
 	"os/exec"
 	"strings"
 	"sync"
+
+	"github.com/fatih/color"
 )
 
 var (
@@ -22,63 +23,33 @@ var (
 	msg       = color.Green
 )
 
-// fatal returns an exit code and an error message.
-// Once the message it output, it then exits the program.
-func fatal(exitval int, fmt string, args ...interface{}) {
-	errmsg(fmt, args...)
-	os.Exit(exitval)
+type cmdResult struct {
+	err error
+	out []byte
 }
 
 // scanTargets runs wpscan against a specified set of targets concurrently.
 // Once it has finished, it returns the output results of the
 // various wpscan instances in the form of a slice.
-func scanTargets(targets []string, wpParams string, cmdOutput []string, wg *sync.WaitGroup) []string {
-
-	// Common Channel for the goroutines
-	tasks := make(chan *exec.Cmd, 64)
-
-	for i := 0; i < len(targets); i++ {
-		wg.Add(1)
-		go func(num int, w *sync.WaitGroup) {
-			defer w.Done()
-			var (
-				out []byte
-				err error
-			)
-			for cmd := range tasks { // this will exit the loop when the channel closes
-				out, err = cmd.Output()
-				if err != nil {
-					errmsg("%s", err)
-				}
-				warn("goroutine %d command output:%s", num, string(out))
-				cmdOutput = append(cmdOutput, string(out))
-			}
-		}(i, wg)
-	}
-
+func scanTargets(targets []string, wpParams string, res chan *cmdResult) {
+	wg := new(sync.WaitGroup)
 	for _, target := range targets {
+		wg.Add(1)
 		msg("Scanning %s with wpscan, please wait...", target)
-		cmd := "wpscan" + " --url " + target + " " + wpParams
-		parts := strings.Fields(string(cmd))
-		head := parts[0]
-		parts = parts[1:]
-		tasks <- exec.Command(head, parts...)
+		go func(t string) {
+			defer wg.Done()
+			opts := append([]string{"--url", t}, strings.Fields(wpParams)...)
+			out, err := exec.Command("wpscan", opts...).CombinedOutput()
+			res <- &cmdResult{out: out, err: err}
+		}(target)
 	}
-	// close the channel
-	close(tasks)
-
-	// wait for the workers to finish
 	wg.Wait()
-	return cmdOutput
+	close(res)
 }
 
-// main launching point for mass-wpscan.
 func main() {
-	var cmdOutput []string
-
 	flag.Parse()
 
-	// if there's no input, print usage
 	if flag.NFlag() == 0 || validateInput() == false {
 		usage()
 	}
@@ -87,29 +58,35 @@ func main() {
 
 	validateWpParams(paramSlice)
 
-	wg := new(sync.WaitGroup)
-	msg("Updating wpscan, please wait...")
-	wg.Add(1)
+	msg("Start wpscan --update")
 	output, err := exec.Command("wpscan", "--update").Output()
 	if err != nil {
 		errmsg("%s", err)
 	}
 	warn("%s", output)
-	wg.Done()
 
-	cmdOutput = append(cmdOutput, string(output))
-
-	// Get targets
 	targets, err := readLines(inputFile)
 	if err != nil {
 		log.Fatalf("readLines: %s", err)
 	}
 
-	cmdOutput = scanTargets(targets, wpParams, cmdOutput, wg)
+	res := make(chan *cmdResult, 64)
+	res <- &cmdResult{out: output, err: err}
 
+	go scanTargets(targets, wpParams, res)
+
+	f := os.Stdout
 	if outfile != "" {
-		if err := writeLines(cmdOutput, outfile); err != nil {
+		// create the output file if one is specified as an input parameter
+		f, err = os.Create(outfile)
+		if err != nil {
 			log.Fatalf("writeLines: %s", err)
+		}
+	}
+	for r := range res {
+		_, err := f.Write(r.out)
+		if err != nil {
+			log.Fatal(err)
 		}
 	}
 }
@@ -146,7 +123,7 @@ func validateInput() bool {
 func validateWpParams(parameters []string) {
 	for _, p := range parameters {
 		if p == "--url" {
-			fatal(1, "You can not include the --url parameter, all targets should be in your input file!")
+			log.Fatal("You can not include the --url parameter, all targets should be in your input file!")
 		}
 	}
 }
