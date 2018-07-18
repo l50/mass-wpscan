@@ -10,12 +10,12 @@ target, and a file to output the results to.
 
 ### Build the binary:
 ```
-make setup
+make build
 ```
 
 ### Build the test lab:
 ```
-make build
+make test
 ```
 
 ### Destroy the test lab:
