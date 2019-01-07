@@ -14,22 +14,17 @@ before_install:
   - sudo apt -y install docker-ce
   - docker --version
   - docker pull wpscanteam/vulnerablewordpress
-  - git clone https://github.com/wpscanteam/wpscan.git
-  - cd wpscan
-  - gem install bundler
-  - bundle install --without test
-  - sudo ln -s $(pwd)/wpscan.rb /usr/local/bin/wpscan
-  - cd ..
+  - gem install wpscan --no-ri --no-rdoc
 
 install:
   - make build
 
 script:
   - make test
-  - docker ps | awk '{ print $13 }' | grep -o -P "(.*:\d+)" > vuln_targets.txt
+  - docker ps | awk '{ print $13 }' | grep -o -P "(.*:\d+)" | sed  's/^/http:\/\//' > vuln_targets.txt
   - docker ps -a
   - sleep 15
   - cat vuln_targets.txt
-  - ./mass-wpscan -i vuln_targets.txt -p "-r --batch -e vt,tt,u,vp" -o output.txt
+  - ./mass-wpscan -i vuln_targets.txt -p "--rua -e vt,tt,u,vp" -o output.txt
   - echo "The contents of output.txt:"
   - cat output.txt

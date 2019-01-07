@@ -108,7 +108,7 @@ func usage() {
 func validateInput() bool {
 	if inputFile == "" || wpParams == "" {
 		errmsg("You must specify an input file with targets and parameters for wpscan!")
-		errmsg("Example: mass-wpscan -i vuln_targets.txt -p \"-r --batch -e vt,tt,u,vp\"")
+		errmsg("Example: mass-wpscan -i vuln_targets.txt -p \"--rua -e vt,tt,u,vp\"")
 		errmsg("Another Example: mass-wpscan -i vuln_targets.txt -p \" \" -o output.txt")
 		return false
 	}
