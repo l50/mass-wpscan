@@ -20,7 +20,7 @@ func readLines(filePath string) ([]string, error) {
 	return RemoveTrailingEmptyStringsInStringArray(strings.Split(string(b), "\n")), nil
 }
 
-// RemoveTrailingEmptyStringsinStringArray removes any empty strings that are trailing
+// RemoveTrailingEmptyStringsInStringArray removes any empty strings that are trailing
 // a given slice.
 func RemoveTrailingEmptyStringsInStringArray(sa []string) []string {
 	lastNonEmptyStringIndex := len(sa) - 1
