@@ -13,7 +13,7 @@ before_install:
   - sudo apt update
   - sudo apt -y install docker-ce
   - docker --version
-  - docker pull wpscanteam/vulnerablewordpress
+  - docker pull l505/vulnerablewordpress
   - gem install wpscan --no-ri --no-rdoc
 
 install:
