@@ -7,7 +7,7 @@ services:
   - docker
 
 before_install:
-  - rvm install 2.4.4
+  - rvm install 2.5.0
   - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
   - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
   - sudo apt update
