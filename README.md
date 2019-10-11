@@ -1,3 +1,4 @@
+
 # mass-wpscan
 [![Build Status](https://travis-ci.org/l50/mass-wpscan.svg?branch=master)](https://travis-ci.org/l50/mass-wpscan)
 [![Go Report Card](https://goreportcard.com/badge/github.com/l50/mass-wpscan)](https://goreportcard.com/report/github.com/l50/mass-wpscan)
@@ -44,13 +45,6 @@ http://0.0.0.0:44400
 http://0.0.0.0:44401
 http://0.0.0.0:44402
 ```
-
-### TODO:
-- [x] Decide if we want to use the default wpscan parameters, or force
-  the user to input them -- we are going to enforce that parameters be input.
-- [x] Create .travis.yml
-- [x] Add comments
-- [x] Make the scans concurrent
 
 ## License
 MIT
